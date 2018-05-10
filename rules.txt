@@ -1,0 +1,25 @@
+1.Jako pierwszy ruch wykonuje grający pionami białymi, po czym gracze wykonują na zmianę kolejne ruchy.
+2.Celem gry jest zbicie wszystkich pionów przeciwnika (w tym damek -- patrz niżej)
+albo zablokowanie wszystkich, które pozostają na planszy, pozbawiając przeciwnika możliwości
+wykonania ruchu. Jeśli żaden z graczy nie jest w stanie tego osiągnąć (każdy z graczy wykona po 15
+ruchów damkami bez zmniejszania liczby pionów pozostających na planszy), następuje remis.
+3.Piony mogą poruszać się o jedno pole do przodu po przekątnej (na ukos) na wolne pola.
+4.Bicie pionem następuje przez przeskoczenie sąsiedniego pionu (lub damki) przeciwnika
+na pole znajdujące się tuż za nim po przekątnej (pole to musi być wolne). Zbite piony
+są usuwane z planszy po zakończeniu ruchu.
+5.Piony mogą bić zarówno do przodu, jak i do tyłu.
+6.W jednym ruchu wolno wykonać więcej niż jedno bicie tym samym pionem, przeskakując przez
+kolejne piony (damki) przeciwnika.
+7.Bicia są obowiązkowe.
+8.Pion, który dojdzie do ostatniego rzędu planszy, staje się damką, przy czym jeśli znajdzie
+się tam w wyniku bicia i będzie mógł wykonać kolejne bicie (do tyłu), to będzie musiał je
+wykonać i nie staje się wtedy damką.
+9.Kiedy pion staje się damką, kolej ruchu przypada dla przeciwnika.
+10.Damki mogą poruszać się w jednym ruchu o dowolną liczbę pól do przodu lub do tyłu po przekątnej,
+zatrzymując się na wolnych polach.
+11.Bicie damką jest możliwe z dowolnej odległości po linii przekątnej i następuje przez przeskoczenie pionu
+(lub damki) przeciwnika, za którym musi znajdować się co najmniej jedno wolne pole -- damka przeskakuje na
+dowolne z tych pól i może kontynuować bicie (na tej samej lub prostopadłej linii).
+12.Kiedy istnieje kilka możliwych bić, gracz musi wykonać maksymalne (tzn. takie, w którym zbije największą
+liczbę pionów lub damek przeciwnika).
+13.Podczas bicia nie można przeskakiwać więcej niż raz przez ten sam pion (damkę).
