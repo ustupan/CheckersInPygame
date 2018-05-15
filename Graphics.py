@@ -82,4 +82,4 @@ class Graphics(SetupWindow):
         self.screen.blit(textSurf, textRect)
 
     def boardCoord(self, coord):
-        return coord[0]/self.squareSize, coord[1]/self.squareSize
+        return int(coord[0]/self.squareSize), int(coord[1]/self.squareSize)-1

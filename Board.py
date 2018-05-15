@@ -29,9 +29,14 @@ class Board:
         elif test == "f":
             pass # tu dodac te ustawiania
         elif test == "g":
-            pass #tu dodac te ustawiania
+            self.matrix[5][4].occupant = Piece('W')
+            self.matrix[4][5].occupant = Piece('B')
+            self.matrix[6][5].occupant = Piece('B')
         elif test == "h":
-            pass #tu dodac te ustawiania
+            for x in range(8):
+                for y in range(3):
+                    if self.matrix[x][y].color == '1':
+                        self.matrix[x][y].occupant = Piece('B')
         else:
             for x in range(8):
                 for y in range(3):
@@ -46,9 +51,9 @@ class Board:
         (x, y) = coord
         if self.matrix[x][y].occupant is not None:
             if self.matrix[x][y].occupant.king is False and self.matrix[x][y].occupant.color == 'W':
-                blindLegalMoves = [(x-1, y-1), (x+1, y-1)]
+                blindLegalMoves = [(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)] #[(x-1, y-1), (x+1, y-1)]
             elif self.matrix[x][y].occupant.king is False and self.matrix[x][y].occupant.color == 'B':
-                blindLegalMoves = [(x-1, y+1), (x+1, y+1)]
+                blindLegalMoves = [(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)] #[(x-1, y+1), (x+1, y+1)]
             else:
                 blindLegalMoves = [(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)]
         else:
@@ -56,27 +61,36 @@ class Board:
         return blindLegalMoves
 
 #uwaga tu gdzies dodac wyjaki
-    def legalMoves(self, coord, jump = False):
+    def legalMoves(self, coord, jump=False):
         (x, y) = coord
         legalMoves = []
+        tempLegalMoves = []
+        state = None
         blindLegalMoves = self.blindLegalMoves(coord)
         if jump is False:
             for move in blindLegalMoves:
                 if self.isOnBoard(move):
                     if self.location(move).occupant is None:
-                        legalMoves.append(move)
+                        if self.location((x, y)).occupant.color == 'W' and move in [(x-1, y-1), (x+1, y-1)]:
+                            legalMoves.append(move)
+                        elif self.location((x, y)).occupant.color == 'B' and move in [(x-1, y+1), (x+1, y+1)]:
+                            legalMoves.append(move)
                     elif (self.location(move).occupant.color != self.location((x, y)).occupant.color and
-                          self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
-                          self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None):
-                        legalMoves.append((move[0] + (move[0] - x), move[1] + (move[1] - y)))
+                            self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
+                            self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None):
+                        state = 1
+                        tempLegalMoves.append((move[0] + (move[0] - x), move[1] + (move[1] - y)))
         else:
             for move in blindLegalMoves:
                 if self.isOnBoard(move) and self.location(move).occupant is not None:
-                    if (self.location(move).occupant.color != self.location((x, y)).occupant.color and
-                            self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
-                            self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None):
+                    if self.location(move).occupant.color != self.location((x, y)).occupant.color and self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None:
                         legalMoves.append((move[0] + (move[0] - x), move[1] + (move[1] - y)))
-        return legalMoves
+
+        #print('My legal moves', legalMoves,'temp legal moves', tempLegalMoves)
+        if state == 1:
+            return tempLegalMoves
+        else:
+            return legalMoves
 
     def location(self, coord):
         (x, y) = coord
@@ -89,6 +103,10 @@ class Board:
         else:
             return True
 
+    def adjacent(self, coord):
+        (x, y) = coord
+        return [(x - 1, y - 1), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1)]
+
     def removePiece(self, coord):
         (x, y) = coord
         self.matrix[x][y].occupant = None
@@ -100,9 +118,9 @@ class Board:
         self.removePiece((start_x, start_y))
         self.king((end_x, end_y))
 
-
     def king(self, coord):
         (x, y) = coord
         if self.location((x, y)).occupant is not None:
             if (self.location((x, y)).occupant.color == 'W' and y == 0) or (self.location((x, y)).occupant.color == 'B' and y == 7): #ewentualnie tu szukac bledu!!!!
                 self.location((x, y)).occupant.king = True
+
