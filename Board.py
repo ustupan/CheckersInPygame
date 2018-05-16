@@ -13,6 +13,8 @@ class Piece: #ewentualnie zrobic go basic i cos potem zmienic...
 class Board:
     def __init__(self):
         self.matrix = self.newBoard()
+        self.jumpAvailablePieces = []
+        self.jump = []
 
     def newBoard(self):
         matrix = [[Square('1') if ((x % 2 != 0) and (y % 2 == 0) or (x % 2 == 0) and (y % 2 != 0)) else Square('0') for x in range(8)] for y in range(8)]
@@ -32,6 +34,7 @@ class Board:
             self.matrix[5][4].occupant = Piece('W')
             self.matrix[4][5].occupant = Piece('B')
             self.matrix[6][5].occupant = Piece('B')
+            self.matrix[4][7].occupant = Piece('B')
         elif test == "h":
             for x in range(8):
                 for y in range(3):
@@ -79,6 +82,7 @@ class Board:
                             self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
                             self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None):
                         state = 1
+                        self.jump.append((x, y))
                         tempLegalMoves.append((move[0] + (move[0] - x), move[1] + (move[1] - y)))
         else:
             for move in blindLegalMoves:
@@ -117,6 +121,15 @@ class Board:
         self.matrix[end_x][end_y].occupant = self.matrix[start_x][start_y].occupant
         self.removePiece((start_x, start_y))
         self.king((end_x, end_y))
+
+    def jumpAvailable(self, color): # z tym sie pobawci (moze dokonczyc dzisiaj)
+        for x in range(8):
+            for y in range(8):
+                if self.matrix[x][y].color == '1' and self.matrix[x][y].occupant is not None and self.matrix[x][y].occupant.color == color:
+                    self.legalMoves((x, y))
+                    for hop in self.jump:
+                        if hop not in self.jumpAvailablePieces:
+                            self.jumpAvailablePieces.append(hop)
 
     def king(self, coord):
         (x, y) = coord

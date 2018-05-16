@@ -1,6 +1,7 @@
 from Graphics import *
 from Board import *
 
+
 class Game(SetupWindow):
     def __init__(self):
         super().__init__()
@@ -19,10 +20,10 @@ class Game(SetupWindow):
     def eventLoopPvP(self):
         for event in pygame.event.get():  #uwaga tu tez rzucac wyjatki
             mousePos = self.graphics.boardCoord(pygame.mouse.get_pos())
-            print(mousePos)
             if event.type == pygame.QUIT:
                 self.terminate_game()
             self.buttonFunc()
+            self.board.jumpAvailable(self.turn)
             self.graphics.message_display(self.turndisplay(self.turn), 50, self.displayWidth/2, self.displayHeight/20, colors["BRIGHT_SUMMER_SUN"])
             self.graphics.drawBoardSquares(self.board)
             self.graphics.drawPieceCircles(self.board)
@@ -33,6 +34,12 @@ class Game(SetupWindow):
                 if self.board.location(self.selectedPiece).occupant is not None:
                     self.board.location(self.selectedPiece).occupant.selected = False
                 self.selectedPiece = None
+                print('Brak mozliwosci Ruchu')
+            if self.selectedPiece is not None and self.board.jumpAvailablePieces:
+                if self.selectedPiece not in self.board.jumpAvailablePieces:
+                    print('Musisz wykonac bicie')
+                    self.board.location(self.selectedPiece).occupant.selected = False
+                    self.selectedPiece = None
             if event.type == pygame.MOUSEBUTTONDOWN and self.board.isOnBoard(mousePos):
                 if self.jump is False:
                     if self.board.location(mousePos).occupant is not None and self.board.location(mousePos).occupant.color == self.turn and self.selectedPiece is None:
@@ -73,6 +80,8 @@ class Game(SetupWindow):
                 if board.matrix[x][y].occupant is not None:
                     board.matrix[x][y].occupant.selected = False
         self.jump = False
+        self.board.jumpAvailablePieces = []
+        self.board.jump = []
         if self.checkEndgame():
             self.endGame = True
 
@@ -125,7 +134,6 @@ class Game(SetupWindow):
         self.turn = self.players[0]
         self.board = Board()
         self.board.initializePieces()
-        self.selectedLegalMoves = []
         self.selectedPiece = None
         self.endGame = False
 
