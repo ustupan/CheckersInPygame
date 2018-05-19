@@ -30,11 +30,11 @@ class Game(SetupWindow):
             self.clock.tick(60)
             if self.selectedPiece is not None and self.jump is True and not self.board.legalMoves(self.selectedPiece, self.jump):
                 self.end_turn(self.board)
-            if self.selectedPiece is not None and not self.board.legalMoves(self.selectedPiece, self.jump):
-                if self.board.location(self.selectedPiece).occupant is not None:
-                    self.board.location(self.selectedPiece).occupant.selected = False
-                self.selectedPiece = None
-                print('Brak mozliwosci Ruchu')
+            if self.selectedPiece is not None and not self.board.legalMoves(self.selectedPiece):
+                    if self.board.location(self.selectedPiece).occupant is not None:
+                        self.board.location(self.selectedPiece).occupant.selected = False
+                    self.selectedPiece = None
+                    print('Brak mozliwosci Ruchu')
             if self.selectedPiece is not None and self.board.jumpAvailablePieces:
                 if self.selectedPiece not in self.board.jumpAvailablePieces:
                     print('Musisz wykonac bicie')
@@ -46,9 +46,15 @@ class Game(SetupWindow):
                         self.selectedPiece = mousePos
                         self.board.location(mousePos).occupant.selected = True
                     elif self.selectedPiece is not None and mousePos in self.board.legalMoves(self.selectedPiece):
+                        colisionMove = self.board.checkColision(self.selectedPiece, mousePos)
                         self.board.movePiece(self.selectedPiece, mousePos)
-                        if mousePos not in self.board.adjacent(self.selectedPiece):
+                        if mousePos not in self.board.adjacent(self.selectedPiece) and isinstance(self.board.location(mousePos).occupant, King) is False:
                             self.board.removePiece((self.selectedPiece[0] + int((mousePos[0] - self.selectedPiece[0]) / 2), self.selectedPiece[1] + int((mousePos[1] - self.selectedPiece[1]) / 2)))
+                            self.jump = True
+                            self.selectedPiece = mousePos
+                            self.board.location(mousePos).occupant.selected = True
+                        elif isinstance(self.board.location(mousePos).occupant, King) is True and colisionMove:
+                            self.board.removePiece(colisionMove)
                             self.jump = True
                             self.selectedPiece = mousePos
                             self.board.location(mousePos).occupant.selected = True
@@ -58,9 +64,10 @@ class Game(SetupWindow):
                     if self.selectedPiece is not None and mousePos in self.board.legalMoves(self.selectedPiece, self.jump):
                         self.board.movePiece(self.selectedPiece, mousePos)
                         self.board.removePiece((self.selectedPiece[0] + int((mousePos[0] - self.selectedPiece[0]) / 2), self.selectedPiece[1] + int((mousePos[1] - self.selectedPiece[1]) / 2)))
-                    if not self.board.legalMoves(mousePos, self.jump):
-                        self.end_turn(self.board)
-                    self.selectedPiece = mousePos
+                        self.board.location(mousePos).occupant.selected = True
+                        self.selectedPiece = mousePos
+                        if not self.board.legalMoves(mousePos, self.jump):
+                            self.end_turn(self.board)
             if self.endGame:
                 self.endGameDisplay()
             pygame.display.update()

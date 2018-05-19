@@ -1,4 +1,5 @@
 import pygame
+from Board import King
 
 colors = {"SUMMER_SUN": (255, 196, 56),
           "BRIGHT_SUMMER_SUN": (255, 228, 196),
@@ -48,12 +49,12 @@ class Graphics(SetupWindow):
                         colour = colors["SUMMER_SUN"]
                         pygame.draw.circle(self.screen, colour, (int(x * self.squareSize + self.pieceSize), int(y * self.squareSize + self.pieceSize + self.squareSize)), int(self.pieceSize))
                         if board.matrix[x][y].occupant.selected is True:
-                            if board.location((x, y)).occupant.king is True:
+                            if isinstance(board.location((x, y)).occupant, King) is True:
                                 self.message_display('[Bd]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
                             else:
                                 self.message_display('[B]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
                         else:
-                            if board.location((x, y)).occupant.king is True:
+                            if isinstance(board.location((x, y)).occupant, King) is True:
                                 self.message_display('Bd', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
                             else:
                                 self.message_display('B', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
@@ -61,12 +62,12 @@ class Graphics(SetupWindow):
                         colour = colors["PACIFIC"]
                         pygame.draw.circle(self.screen, colour, (int(x * self.squareSize + self.pieceSize), int(y * self.squareSize + self.pieceSize + self.squareSize)), int(self.pieceSize))
                         if board.matrix[x][y].occupant.selected is True:
-                            if board.location((x, y)).occupant.king is True:
+                            if isinstance(board.location((x, y)).occupant, King) is True:
                                 self.message_display('[Cd]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
                             else:
                                 self.message_display('[C]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
                         else:
-                            if board.location((x, y)).occupant.king is True:
+                            if isinstance(board.location((x, y)).occupant, King) is True:
                                 self.message_display('Cd', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
                             else:
                                 self.message_display('C', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
