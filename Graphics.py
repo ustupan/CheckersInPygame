@@ -9,28 +9,44 @@ colors = {"SUMMER_SUN": (255, 196, 56),
           "BRIGHT_PACIFIC": (75, 198, 213),
           "BLACK": (19, 27, 29),
           "CHERRY": (165, 30, 44),
-          "NIGHT_OF_NAVY": (33, 64, 95)
+          "NIGHT_OF_NAVY": (33, 64, 95),
+          "GREEN": (197, 244, 66)
           }
 
 
 class SetupWindow:
     def __init__(self):
-        self.displayWidth = 800
-        self.displayHeight = 600
+        self.__displayWidth = 800
+        self.__displayHeight = 600
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((self.displayWidth, self.displayHeight))
+        self.screen = pygame.display.set_mode((self.__displayWidth, self.__displayHeight))
         pygame.display.set_caption("Checkers")
-        self.crashed = False
+        self.__crashed = False
+
+    def getDisplayHeight(self):
+        return self.__displayHeight
+
+    def getDisplayWidth(self):
+        return self.__displayWidth
+
+    def setCrashed(self, value):
+        self.__crashed = value
+
+    def getCrashed(self):
+        return self.__crashed
 
 
 class Graphics(SetupWindow):
     def __init__(self):
         super().__init__()
-        self.squareSize = (self.displayHeight/8)-8
-        self.pieceSize = self.squareSize / 2
-        self.message = False
-        self.boardSize = self.squareSize * 8
+        self.__squareSize = (self.getDisplayHeight() / 8) - 8
+        self.__pieceSize = self.__squareSize / 2
+        self.__message = False
+        self.__boardSize = self.__squareSize * 8
+
+    def getBoardSize(self):
+        return self.__boardSize
 
     def drawBoardSquares(self, board):
         for x in range(8):
@@ -39,7 +55,13 @@ class Graphics(SetupWindow):
                     colour = colors["EARLY_ESPRESSO"]
                 else:
                     colour = colors["MUSTARD"]
-                pygame.draw.rect(self.screen, colour, (x * self.squareSize, y * self.squareSize + self.squareSize, self.squareSize, self.squareSize))
+                pygame.draw.rect(self.screen, colour, (x * self.__squareSize, y * self.__squareSize + self.__squareSize, self.__squareSize, self.__squareSize))
+
+    def highlightMoves(self, moves):
+        for x in range(8):
+            for y in range(8):
+                if (x, y) in moves:
+                    pygame.draw.rect(self.screen, colors['GREEN'], (x * self.__squareSize, y * self.__squareSize + self.__squareSize, self.__squareSize, self.__squareSize))
 
     def drawPieceCircles(self, board):
         for x in range(8):
@@ -47,30 +69,30 @@ class Graphics(SetupWindow):
                 if board.matrix[x][y].occupant is not None:
                     if board.matrix[x][y].occupant.color == 'W':
                         colour = colors["SUMMER_SUN"]
-                        pygame.draw.circle(self.screen, colour, (int(x * self.squareSize + self.pieceSize), int(y * self.squareSize + self.pieceSize + self.squareSize)), int(self.pieceSize))
+                        pygame.draw.circle(self.screen, colour, (int(x * self.__squareSize + self.__pieceSize), int(y * self.__squareSize + self.__pieceSize + self.__squareSize)), int(self.__pieceSize))
                         if board.matrix[x][y].occupant.selected is True:
                             if isinstance(board.location((x, y)).occupant, King) is True:
-                                self.message_display('[Bd]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
+                                self.message_display('[Bd]', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_SUMMER_SUN"])
                             else:
-                                self.message_display('[B]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
+                                self.message_display('[B]', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_SUMMER_SUN"])
                         else:
                             if isinstance(board.location((x, y)).occupant, King) is True:
-                                self.message_display('Bd', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
+                                self.message_display('Bd', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_SUMMER_SUN"])
                             else:
-                                self.message_display('B', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_SUMMER_SUN"])
+                                self.message_display('B', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_SUMMER_SUN"])
                     else:
                         colour = colors["PACIFIC"]
-                        pygame.draw.circle(self.screen, colour, (int(x * self.squareSize + self.pieceSize), int(y * self.squareSize + self.pieceSize + self.squareSize)), int(self.pieceSize))
+                        pygame.draw.circle(self.screen, colour, (int(x * self.__squareSize + self.__pieceSize), int(y * self.__squareSize + self.__pieceSize + self.__squareSize)), int(self.__pieceSize))
                         if board.matrix[x][y].occupant.selected is True:
                             if isinstance(board.location((x, y)).occupant, King) is True:
-                                self.message_display('[Cd]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
+                                self.message_display('[Cd]', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_PACIFIC"])
                             else:
-                                self.message_display('[C]', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
+                                self.message_display('[C]', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_PACIFIC"])
                         else:
                             if isinstance(board.location((x, y)).occupant, King) is True:
-                                self.message_display('Cd', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
+                                self.message_display('Cd', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_PACIFIC"])
                             else:
-                                self.message_display('C', 30, x * self.squareSize + self.pieceSize, y * self.squareSize + self.pieceSize + self.squareSize, colors["BRIGHT_PACIFIC"])
+                                self.message_display('C', 30, x * self.__squareSize + self.__pieceSize, y * self.__squareSize + self.__pieceSize + self.__squareSize, colors["BRIGHT_PACIFIC"])
 
     def text_objects(self,text,font, color):
         textSurface = font.render(text, True, color)
@@ -83,4 +105,4 @@ class Graphics(SetupWindow):
         self.screen.blit(textSurf, textRect)
 
     def boardCoord(self, coord):
-        return int(coord[0]/self.squareSize), int(coord[1]/self.squareSize)-1
+        return int(coord[0] / self.__squareSize), int(coord[1] / self.__squareSize) - 1

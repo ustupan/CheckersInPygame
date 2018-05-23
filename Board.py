@@ -30,12 +30,17 @@ class Board:
 
     def newBoard(self):
         matrix = [[Square('1') if ((x % 2 != 0) and (y % 2 == 0) or (x % 2 == 0) and (y % 2 != 0)) else Square('0') for x in range(8)] for y in range(8)]
-        return matrix
+        return matrix # uzycie list comprehansions
 
     def initializePieces(self, test=None):
         """
         test == [d,e,f,g,h] special testing composition
         """
+        initializeComp = {
+            'BlackPieces': (lambda x, y: BasicPiece('B') if self.matrix[x][y].color == '1' else None), # Uzycie lambd
+            'WhitePieces': (lambda x, y: BasicPiece('W') if self.matrix[x][y].color == '1' else None)
+        }
+
         if test == "d":
             pass  #tu dodac te ustawienia
         elif test == "e":
@@ -54,7 +59,6 @@ class Board:
             self.matrix[4][1].occupant = BasicPiece('W')
             self.matrix[4][5].occupant = BasicPiece('B')
             self.matrix[6][5].occupant = BasicPiece('B')
-            #self.matrix[5][2].occupant = BasicPiece('B')
             self.matrix[2][5].occupant = BasicPiece('B')
             self.matrix[2][3].occupant = BasicPiece('B')
             self.matrix[4][3].occupant = BasicPiece('B')
@@ -62,16 +66,13 @@ class Board:
         elif test == "h":
             for x in range(8):
                 for y in range(3):
-                    if self.matrix[x][y].color == '1':
-                        self.matrix[x][y].occupant = BasicPiece('B')
+                        self.matrix[x][y].occupant = initializeComp['BlackPieces'](x, y)
         else:
             for x in range(8):
                 for y in range(3):
-                    if self.matrix[x][y].color == '1':
-                        self.matrix[x][y].occupant = BasicPiece('B')
+                    self.matrix[x][y].occupant = initializeComp['BlackPieces'](x, y)
                 for y in range(5, 8):
-                    if self.matrix[x][y].color == '1':
-                        self.matrix[x][y].occupant = BasicPiece('W')
+                    self.matrix[x][y].occupant = initializeComp['WhitePieces'](x, y)
 
     def blindLegalMoves(self, coord):  #uwaga tu gdzies dodac wyjaki
         (x, y) = coord
@@ -79,33 +80,33 @@ class Board:
         if self.matrix[x][y].occupant is not None and isinstance(self.location((x, y)).occupant, King) is False:
             blindLegalMoves = [(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)]
         elif self.matrix[x][y].occupant is not None and isinstance(self.location((x, y)).occupant, King) is True:
-            blindLegalMoves.extend([(x - i, y - i) for i in range(1, 8) if self.isOnBoard((x - i, y - i))])
+            blindLegalMoves.extend([(x - i, y - i) for i in range(1, 8) if self.isOnBoard((x - i, y - i))]) # list compre
             blindLegalMoves.extend([(x + i, y - i) for i in range(1, 8) if self.isOnBoard((x + i, y - i))])
             blindLegalMoves.extend([(x - i, y + i) for i in range(1, 8) if self.isOnBoard((x - i, y + i))])
             blindLegalMoves.extend([(x + i, y + i) for i in range(1, 8) if self.isOnBoard((x + i, y + i))])
         return blindLegalMoves
 
-    def legalMoves(self, coord, jump=False): #uwaga tu gdzies dodac wyjaki
+    def legalMoves(self, coord, jump=False):
         (x, y) = coord
         legalMoves = []
         tempLegalMoves = []
         state = None
         blindLegalMoves = self.blindLegalMoves(coord)
-        if jump is False: #and isinstance(self.location((x, y)).occupant, King) is False
+        if jump is False:
             for move in blindLegalMoves:
                 if self.isOnBoard(move):
                     if self.location(move).occupant is None and isinstance(self.location((x, y)).occupant, King) is False:
-                        if self.location((x, y)).occupant.color == 'W' and move in [(x-1, y-1), (x+1, y-1)]:
+                        if self.location((x, y)).occupant.color == 'W' and move in [(x - 1, y - 1), (x + 1, y - 1)]:
                             legalMoves.append(move)
-                        elif self.location((x, y)).occupant.color == 'B' and move in [(x-1, y+1), (x+1, y+1)]:
+                        elif self.location((x, y)).occupant.color == 'B' and move in [(x - 1, y + 1), (x + 1, y + 1)]:
                             legalMoves.append(move)
                     elif (self.location(move).occupant is None and isinstance(self.location((x, y)).occupant, King) is True
-                            and self.checkColision(coord, move) is None):
+                          and self.checkColision(coord, move) is None):
                         legalMoves.append(move)
-                    elif (self.location(move).occupant is not None and self.location(move).occupant.color != self.location((x, y)).occupant.color and #bicie pionami
-                            self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
-                            self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None
-                            and isinstance(self.location((x, y)).occupant, King) is False):
+                    elif (self.location(move).occupant is not None and self.location(move).occupant.color != self.location((x, y)).occupant.color and  #bicie pionami
+                          self.isOnBoard((move[0] + (move[0] - x), move[1] + (move[1] - y))) and
+                          self.location((move[0] + (move[0] - x), move[1] + (move[1] - y))).occupant is None
+                          and isinstance(self.location((x, y)).occupant, King) is False):
                         state = 1
                         self.jump.append((x, y))
                         tempLegalMoves.append((move[0] + (move[0] - x), move[1] + (move[1] - y)))
@@ -251,6 +252,6 @@ class Board:
     def king(self, coord):
         (x, y) = coord
         if self.location((x, y)).occupant is not None:
-            if (self.location((x, y)).occupant.color == 'W' and y == 0) or (self.location((x, y)).occupant.color == 'B' and y == 7): #ewentualnie tu szukac bledu!!!!
+            if (self.location((x, y)).occupant.color == 'W' and y == 0) or (self.location((x, y)).occupant.color == 'B' and y == 7):
                 color = self.location((x, y)).occupant.color
                 self.location((x, y)).occupant = King(color)
